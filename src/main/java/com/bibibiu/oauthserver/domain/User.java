@@ -18,6 +18,7 @@ import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
@@ -59,6 +60,10 @@ public class User extends BaseModel implements UserDetails {
     @Singular
     @NotEmpty(message = "User must at least have one authority")
     private Set<SimpleGrantedAuthority> authorities;
+
+    public Set<SimpleGrantedAuthority> getAuthorities() {
+        return Collections.unmodifiableSet(this.authorities);
+    }
 
     public enum Authority {
         CUSTOMER_CARE, ADMIN, SUPER_ADMIN, USER

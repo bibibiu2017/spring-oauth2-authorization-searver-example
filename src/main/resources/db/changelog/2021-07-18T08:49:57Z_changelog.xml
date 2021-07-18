@@ -46,13 +46,4 @@
     <changeSet author="arthurmita (generated)" id="1626598205265-4">
         <addUniqueConstraint columnNames="user_id" constraintName="UC_USERSUSER_ID_COL" tableName="users"/>
     </changeSet>
-    <changeSet author="arthurmita (generated)" id="1626598205265-5">
-        <dropTable tableName="oauth2_authorization"/>
-    </changeSet>
-    <changeSet author="arthurmita (generated)" id="1626598205265-6">
-        <dropTable tableName="oauth2_authorization_consent"/>
-    </changeSet>
-    <changeSet author="arthurmita (generated)" id="1626598205265-7">
-        <dropTable tableName="oauth2_registered_client"/>
-    </changeSet>
 </databaseChangeLog>

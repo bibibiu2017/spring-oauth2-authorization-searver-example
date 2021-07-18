@@ -6,6 +6,7 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import one.util.streamex.StreamEx;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -32,6 +33,10 @@ import org.springframework.security.oauth2.server.authorization.config.ProviderS
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -99,30 +104,24 @@ class AuthServerConfiguration {
     private void enhanceUserIdToken(JwtEncodingContext context) {
         UsernamePasswordAuthenticationToken authentication = context.getPrincipal();
         User user = (User) authentication.getPrincipal();
-        context.getClaims().claims(claims -> claims.put("userId", user.getUserId()));
+        context.getClaims().claim("userId", user.getUserId());
     }
 
     private void enhanceTokenAudience(JwtEncodingContext context) {
         var client = context.getRegisteredClient();
 
-        String resourceIds = client.getClientSettings().setting("resourceIds");
+        List<String> resources = client.getClientSettings().setting("resources");
 
-        if (resourceIds == null || resourceIds.isEmpty()) return;
+        if (resources == null || resources.isEmpty()) return;
 
-        var ids = Arrays.asList(resourceIds.split(","));
-
-        context.getClaims().claims(claims ->
-                claims.put(OAuth2TokenIntrospectionClaimNames.AUD, ids));
+        context.getClaims().audience(resources);
     }
 
     private void enhanceUserAccessToken(JwtEncodingContext context) {
         UsernamePasswordAuthenticationToken authentication = context.getPrincipal();
         User user = (User) authentication.getPrincipal();
-        context.getClaims().claims(claims ->
-                claims.put("authorities", user.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toUnmodifiableSet())
-                ));
+        var authorities = StreamEx.of(user.getAuthorities()).map(GrantedAuthority::getAuthority).toSet();
+        context.getClaims().claim("authorities", Collections.unmodifiableSet(authorities));
     }
 
     @Bean
@@ -139,6 +138,6 @@ class AuthServerConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(16);
+        return new BCryptPasswordEncoder(12);
     }
 }
