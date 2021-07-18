@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: flows
+  output:
+    ansi:
+      enabled: always
+  profiles:
+    active: ${PROFILES_ACTIVE:dev,stream,bootstrap}
+  liquibase:
+    change-log: classpath:db/db.changelog-master.xml
+  cloud:
+    stream:
+      default:
+        contentType: application/json
+        consumer:
+          max-attempts: 1
+      function:
+        definition: parking;
+  cache:
+    type: redis
+    redis:
+      time-to-live: 1D
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+feign:
+  circuitbreaker:
+    enabled: true
+  client:
+    config:
+      default:
+        logger-level: ${FEIGN_LOGGER_LEVEL:full}
+        connect-timeout: 5000
+        read-timeout: 150000
+        retryer: feign.Retryer.Default
+
+server:
+  port: 8000
+  servlet:
+    context-path: /authorization
+
+springdoc:
+  swagger-ui:
+    oauth:
+      use-basic-authentication-with-access-code-grant: true
+      scopes:
+        - bibibiu_auth:read
+        - bibibiu_auth:write
+      client-id: 8N62ht6GVjxyVSBT
+      client-secret: juEmW6XsUUtvDXacUqvBbTqKWFLsCwkyJ8ZXRyYX
+    tags-sorter: alpha
+    display-request-duration: true
+    oauth2-redirect-url: http://localhost:8080/auth/swagger-ui/oauth2-redirect.html

@@ -1,0 +1,84 @@
+h1 {
+    color: #78ab46;
+}
+
+body {
+    background-color: #efefef;
+    /*background-color: whitesmoke;*/
+}
+
+footer {
+    position: fixed;
+    height: 25px;
+    bottom: 0;
+    width: 100%;
+    background-color: #ccc
+}
+
+footer p {
+    margin: auto;
+}
+
+.rounded {
+    border-radius: 15px !important;
+}
+
+.rounded-small {
+    border-radius: 10px !important;
+}
+
+.brand-color {
+    background-color: #4aa3c6;
+}
+
+.logo {
+    width: 50%;
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+
+.malipo-view {
+    margin-top: 100px;
+    margin-bottom: 5px;
+    background-color: whitesmoke;
+}
+
+.error-message {
+    color: #a94442;
+}
+
+.error-message:first-letter {
+    text-transform: capitalize;
+}
+
+.inner-div {
+    margin: auto;
+}
+
+.custom-radio {
+    transform: scale(2);
+}
+
+.list-group input[type="radio"] {
+    display: none;
+}
+
+.list-group input[type="radio"] + .list-group-item {
+    cursor: pointer;
+}
+
+.list-group input[type="radio"] + .list-group-item:before {
+    content: "\2022";
+    color: transparent;
+    font-weight: bold;
+    margin-right: 1em;
+}
+
+.list-group input[type="radio"]:checked + .list-group-item {
+    background-color: lightgray;
+    color: black;
+}
+
+.list-group input[type="radio"]:checked + .list-group-item:before {
+    color: inherit;
+}

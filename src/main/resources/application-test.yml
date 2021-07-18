@@ -1,0 +1,59 @@
+spring:
+  datasource:
+    dbcp2:
+      test-while-idle: true
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: Africa/Nairobi
+
+  redis:
+    port: 6380
+
+  cloud:
+    stream:
+      default-binder: integration
+
+  security:
+    oauth2:
+      client:
+        registration:
+          client-auth:
+            provider: bibibiu-oauth
+            client-id: bibibiu_auth_client
+            client-secret: secret
+            authorization-grant-type: client_credentials
+        provider:
+          bibibiu-oauth:
+            token-uri: http://localhost:8000/auth/oauth/token
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8000/auth/.well-known/jwks.json
+
+security:
+  resource-id: bibibiu-auth
+
+wavefront:
+  tracing:
+    enabled: false
+
+management:
+  metrics:
+    export:
+      wavefront:
+        enabled: false
+
+logging:
+  level:
+    com.bibibiu: debug
+    ke.co.dynamodigital.commons: debug
+    org.hibernate.stat: info
+    org.hibernate.SQL: info
+    org.hibernate.type: info.
+    org.springframework.cache: trace
