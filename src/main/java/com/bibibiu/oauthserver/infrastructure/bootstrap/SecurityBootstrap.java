@@ -18,17 +18,13 @@ import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static com.bibibiu.oauthserver.domain.User.Authority.SUPER_ADMIN;
-import static java.util.Collections.unmodifiableList;
-import static org.springframework.security.oauth2.core.AuthorizationGrantType.AUTHORIZATION_CODE;
-import static org.springframework.security.oauth2.core.AuthorizationGrantType.CLIENT_CREDENTIALS;
-import static org.springframework.security.oauth2.core.AuthorizationGrantType.REFRESH_TOKEN;
-import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC;
-import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.POST;
+import static com.bibibiu.oauthserver.domain.User.Authority.*;
+import static java.util.Collections.*;
+import static org.springframework.security.oauth2.core.AuthorizationGrantType.*;
+import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.*;
 
 /**
  * @author arthurmita
@@ -62,27 +58,45 @@ class SecurityBootstrap {
     @Order(2)
     ApplicationRunner clientRunner(SaveClientJpaPort port, PasswordEncoder encoder) {
         return args -> {
-            //noinspection RedundantUnmodifiable
-            var client = RegisteredClient.withId(SecurityUtils.uuidGenerator())
-                    .clientName("UsersClient")
-                    .clientId("bibibiu_users_client")
-                    .clientSecret(encoder.encode("bibibiu_auth_secret"))
-                    .redirectUri("https://www.example.com")
-                    .clientAuthenticationMethod(BASIC)
-                    .clientAuthenticationMethod(POST)
-                    .clientSettings(settings -> settings.requireUserConsent(true).requireProofKey(true))
-                    .scopes(scopes -> scopes.addAll(Set.of(OidcScopes.OPENID, "bibibiu_auth:read", "bibibiu_auth:write")))
-                    .clientSettings(settings -> settings.setting("resources", unmodifiableList(List.of("bibibiu-auth", "bibibiu-accounts"))))
-                    .authorizationGrantTypes(grantTypes -> grantTypes.addAll(Set.of(AUTHORIZATION_CODE, CLIENT_CREDENTIALS, REFRESH_TOKEN)))
-                    .tokenSettings(settings -> settings.accessTokenTimeToLive(Duration.ofHours(1)))
-                    .tokenSettings(settings -> settings.refreshTokenTimeToLive(Duration.ofHours(24)))
-                    .build();
             try {
-                var created = port.save(CreateRegisteredClientCommand.of(client));
-                LogUtils.logObject(log, created, "Created Client");
+                List.of(webClient(encoder),authServerClient(encoder)).stream()
+                        .map(client -> port.save(CreateRegisteredClientCommand.of(client)))
+                        .forEach(client -> LogUtils.logObject(log, client, "Created Client"));
             } catch (Exception e) {
                 LogUtils.logError(log, "Could Not Create Client", e.getMessage(), e);
             }
         };
+    }
+
+    private RegisteredClient webClient(PasswordEncoder encoder) {
+        // noinspection deprecation,RedundantUnmodifiable
+        return RegisteredClient.withId(SecurityUtils.uuidGenerator())
+                .clientName("Game Redux Web")
+                .clientId("game_redux_web_client")
+                .clientSecret(encoder.encode("bibibiu_auth_secret"))
+                .redirectUri("https://www.example.com")
+                .clientAuthenticationMethod(BASIC)
+                .clientAuthenticationMethod(POST)
+                .clientSettings(settings -> settings.requireUserConsent(true).requireProofKey(true))
+                .scopes(scopes -> scopes.addAll(Set.of(OidcScopes.OPENID, "user.read", "user.write", "account.read")))
+                .clientSettings(settings -> settings.setting("resources", unmodifiableList(List.of("game-redux-auth", "game-redux-accounts"))))
+                .authorizationGrantTypes(grantTypes -> grantTypes.addAll(Set.of(AUTHORIZATION_CODE, REFRESH_TOKEN)))
+                .tokenSettings(settings -> settings.accessTokenTimeToLive(Duration.ofMinutes(30)))
+                .tokenSettings(settings -> settings.refreshTokenTimeToLive(Duration.ofHours(24)))
+                .build();
+    }
+
+    private RegisteredClient authServerClient(PasswordEncoder encoder) {
+        // noinspection deprecation,RedundantUnmodifiable
+        return RegisteredClient.withId(SecurityUtils.uuidGenerator())
+                .clientName("Game Redux Auth Server")
+                .clientId("game_redux_auth_client")
+                .clientSecret(encoder.encode("secret"))
+                .clientAuthenticationMethod(BASIC)
+                .scopes(scopes -> scopes.addAll(Set.of("account.read", "account.write")))
+                .clientSettings(settings -> settings.setting("resources", unmodifiableList(List.of("game-redux-accounts"))))
+                .authorizationGrantTypes(grantTypes -> grantTypes.addAll(Set.of(CLIENT_CREDENTIALS)))
+                .tokenSettings(settings -> settings.accessTokenTimeToLive(Duration.ofDays(1)))
+                .build();
     }
 }

@@ -3,7 +3,8 @@ package com.bibibiu.oauthserver.adapter.secondary.persistence.jpa;
 import com.bibibiu.oauthserver.application.port.out.client.SaveClientJpaPort;
 import ke.co.dynamodigital.commons.annotations.PersistenceAdapter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.oauth2.server.authorization.client.*;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 
 /**
  * @author arthurmita

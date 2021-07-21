@@ -17,7 +17,7 @@
         <java.version>11</java.version>
         <spring-cloud.version>2020.0.3</spring-cloud.version>
         <wavefront.version>2.2.0</wavefront.version>
-        <commons.version>2.1.1-SNAPSHOT</commons.version>
+        <commons.version>2.2.0-SNAPSHOT</commons.version>
 
         <!--CI/CD-->
         <build.number>000</build.number>
@@ -64,6 +64,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>oauth2-oidc-sdk</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- thymeleaf -->

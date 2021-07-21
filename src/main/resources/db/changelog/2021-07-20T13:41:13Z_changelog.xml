@@ -2,7 +2,7 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog /db/changelog/dbchangelog-4.1.xsd">
-    <changeSet author="arthurmita (generated)" id="1626597977364-1">
+    <changeSet author="arthurmita (generated)" id="1626788479187-1">
         <createTable tableName="oauth2_authorization">
             <column name="id" type="VARCHAR(100)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -38,7 +38,7 @@
             <column name="refresh_token_metadata" type="VARCHAR(2000)"/>
         </createTable>
     </changeSet>
-    <changeSet author="arthurmita (generated)" id="1626597977364-2">
+    <changeSet author="arthurmita (generated)" id="1626788479187-2">
         <createTable tableName="oauth2_authorization_consent">
             <column name="registered_client_id" type="VARCHAR(100)">
                 <constraints nullable="false" primaryKey="true"/>
@@ -51,7 +51,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet author="arthurmita (generated)" id="1626597977364-3">
+    <changeSet author="arthurmita (generated)" id="1626788479187-3">
         <createTable tableName="oauth2_registered_client">
             <column name="id" type="VARCHAR(100)">
                 <constraints nullable="false" primaryKey="true"/>

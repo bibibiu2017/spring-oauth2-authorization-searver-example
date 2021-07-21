@@ -1,5 +1,6 @@
 package com.bibibiu.oauthserver.infrastructure.security.config;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -9,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * created 30/03/2020 at 09:11
  **/
 
+@Configuration
 class WebMvc implements WebMvcConfigurer {
 
     @Override
