@@ -23,12 +23,12 @@ import static org.springframework.security.oauth2.core.oidc.OidcScopes.*;
  * @author arthurmita
  * created 20/07/2021 at 23:51
  **/
-class UserInfoOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
+class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
     private final UserDetailsService service;
     private final  OpaqueTokenIntrospector delegate;
 
-    public UserInfoOpaqueTokenIntrospector(UserDetailsService service, OAuth2ResourceServerProperties properties) {
+    public CustomOpaqueTokenIntrospector(UserDetailsService service, OAuth2ResourceServerProperties properties) {
         this.service = service;
         var opaqueToken = properties.getOpaquetoken();
         var uri = opaqueToken.getIntrospectionUri();

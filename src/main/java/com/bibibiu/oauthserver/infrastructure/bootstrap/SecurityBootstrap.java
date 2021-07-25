@@ -92,6 +92,7 @@ class SecurityBootstrap {
                 .clientId("game_redux_auth_client")
                 .clientSecret(encoder.encode("secret"))
                 .clientAuthenticationMethod(BASIC)
+                .clientAuthenticationMethod(POST)
                 .scopes(scopes -> scopes.addAll(Set.of("account.read", "account.write")))
                 .clientSettings(settings -> settings.setting("resources", unmodifiableList(List.of("game-redux-accounts"))))
                 .authorizationGrantTypes(grantTypes -> grantTypes.addAll(Set.of(CLIENT_CREDENTIALS)))

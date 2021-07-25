@@ -6,7 +6,6 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import one.util.streamex.StreamEx;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -16,10 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.OAuth2TokenType;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.*;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
@@ -27,7 +24,6 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.config.ProviderSettings;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -70,18 +66,9 @@ class AuthServerConfiguration {
     public OAuth2TokenCustomizer<JwtEncodingContext> userCustomizer() {
 
         return (context) -> {
-            if (context.getTokenType().getValue().equals("id_token"))
-                enhanceIdToken(context);
-            if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType()))
-                enhanceAccessToken(context);
             enhanceTokenAudience(context);
+            if (context.getTokenType().getValue().equals("id_token")) enhanceIdToken(context);
         };
-    }
-
-    private void enhanceAccessToken(JwtEncodingContext context) {
-        if (context.getPrincipal() != null && context.getPrincipal().isAuthenticated())
-            if (context.getPrincipal() instanceof UsernamePasswordAuthenticationToken)
-                enhanceUserAccessToken(context);
     }
 
     private void enhanceIdToken(JwtEncodingContext context) {
@@ -104,13 +91,6 @@ class AuthServerConfiguration {
         if (resources == null || resources.isEmpty()) return;
 
         context.getClaims().audience(resources);
-    }
-
-    private void enhanceUserAccessToken(JwtEncodingContext context) {
-        UsernamePasswordAuthenticationToken authentication = context.getPrincipal();
-        User user = (User) authentication.getPrincipal();
-        var authorities = StreamEx.of(user.getAuthorities()).map(GrantedAuthority::getAuthority).toSet();
-        context.getClaims().claim("authorities", Collections.unmodifiableSet(authorities));
     }
 
     @Bean

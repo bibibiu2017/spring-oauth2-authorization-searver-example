@@ -2,7 +2,9 @@ package com.bibibiu.oauthserver.adapter.primary.web.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,12 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
  **/
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/users")
+@RequestMapping({"/v1/users"})
 class UserController {
 
     @GetMapping("/user-info")
     @PreAuthorize("hasAuthority('SCOPE_openid')")
     UserResponse userInfo(@AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return UserResponse.builder()
                 .phoneNumber(principal.getAttribute("phone_number"))
                 .userId(principal.getAttribute("user_id"))
