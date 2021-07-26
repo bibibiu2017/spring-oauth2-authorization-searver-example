@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.server.resource.introspection.BadOpaqueTokenException;
 import org.springframework.security.oauth2.server.resource.introspection.NimbusOpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.bibibiu.oauthserver.infrastructure.security.config.WebConfiguration.*;
 import static org.springframework.security.oauth2.core.oidc.OidcScopes.*;
 
 /**
@@ -40,6 +42,9 @@ class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
     @Override
     public OAuth2AuthenticatedPrincipal introspect(String token) {
         OAuth2IntrospectionAuthenticatedPrincipal authorized = (OAuth2IntrospectionAuthenticatedPrincipal) delegate.introspect(token);
+
+        if (!authorized.getAudience().contains(RESOURCE))
+            throw new BadOpaqueTokenException("Provided token does not have audience(" + RESOURCE +")");
 
         List<String> scopes = authorized.getClaimAsStringList("scope");
         if (scopes == null || !scopes.contains(OPENID))
